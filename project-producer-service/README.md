@@ -1,4 +1,4 @@
-# Producer Service
+# Open API - Producer Service
 - Demonstration the service which will be called by consumer services
 
 ## How to run locally
