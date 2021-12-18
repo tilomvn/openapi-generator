@@ -1,5 +1,5 @@
 # Open API - Consumer Service
-- Consuming Merchant API
+- Consuming Producer APIs
 
 ## How to run locally
 - Make sure you have docker installed (include docker-compose)
