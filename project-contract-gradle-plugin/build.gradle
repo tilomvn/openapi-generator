@@ -1,0 +1,33 @@
+plugins {
+	id 'java'
+	id 'java-gradle-plugin'
+	id 'maven-publish'
+}
+
+gradlePlugin {
+	plugins {
+		openApi {
+			id = 'kh.com.sathapana.openapi'
+			implementationClass = 'kh.com.sathapana.openapi.OpenApiPlugin'
+		}
+	}
+}
+
+
+group = 'kh.com.sathapana.openapi'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.sonatype.nexus:nexus-client-core:2.14.20-02'
+	implementation 'org.openapitools:openapi-generator-gradle-plugin:5.3.0'
+}
+
+
+test {
+	useJUnitPlatform()
+}

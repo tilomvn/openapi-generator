@@ -1,0 +1,27 @@
+plugins {
+	id 'java'
+	id 'application'
+}
+
+group = 'kh.com.sathapana.openapi'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	javaMainClass = "kh.com.sathapana.openapi.Main"
+}
+
+application {
+	mainClassName = javaMainClass
+}
+
+dependencies {
+	implementation 'org.sonatype.nexus:nexus-client-core:2.14.20-02'
+	implementation 'org.openapitools.openapidiff:openapi-diff-core:2.0.0-beta.11'
+	implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+}
+

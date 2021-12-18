@@ -1,0 +1,111 @@
+
+buildscript {
+	ext {
+		mockitoVersion = "4.0.0"
+		logstashVersion = "6.6"
+		databaseTestVersion = "2.1.1"
+		hibernateValidator = "7.0.1.Final"
+		lombokVersion = "1.18.20"
+		jwtVersion = "3.18.1"
+		flywayVersion = "5.2.4"
+		jacksonDatabindVersion = "0.2.1"
+		apacheCommonsCollection = "4.4"
+		apacheCommonsCollection = "4.4"
+		wiremockVersion = "2.27.2"
+	}
+	repositories {
+		mavenCentral()
+		mavenLocal()
+	}
+	dependencies {
+		classpath "kh.com.sathapana.openapi:contract-plugin:1.0.0-SNAPSHOT"
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.5.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+apply plugin: 'idea'
+apply plugin: 'java'
+
+/*apply plugin: 'kh.com.sathapana.openapi'*/
+group = 'kh.com.sathapana.merchant'
+version = '1.0'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'mysql:mysql-connector-java'
+	implementation "net.logstash.logback:logstash-logback-encoder:${logstashVersion}"
+	implementation "org.hibernate.validator:hibernate-validator:${hibernateValidator}"
+	implementation 'io.swagger:swagger-annotations:1.6.3'
+	implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindVersion}"
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+	implementation "com.auth0:java-jwt:${jwtVersion}"
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation "org.apache.commons:commons-collections4:${apacheCommonsCollection}"
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation "org.apache.commons:commons-collections4:${apacheCommonsCollection}"
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+	testImplementation "io.zonky.test:embedded-database-spring-test:$databaseTestVersion"
+	testImplementation "org.flywaydb:flyway-core:${flywayVersion}"
+	testImplementation 'org.apache.httpcomponents:httpclient:4.5.13'
+	testImplementation "com.github.tomakehurst:wiremock:${wiremockVersion}"
+
+}
+
+/*openApi {
+	consumers = [
+			'contract.merchant.merchant:v1.0.0',
+	]
+	producers = [
+			'contract.merchant.store:v1.0.0'
+	]
+}*/
+
+test {
+	maxHeapSize = "2g"
+	minHeapSize = "1g"
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+sourceSets {
+	getByName("main") {
+		java {
+			srcDir("${buildDir}/openApi/generated/src/main/java")
+		}
+	}
+}
+
+/*task buildDockerImage(type:Exec) {
+	workingDir "$projectDir"
+	commandLine "docker", "build", ".", "-f", "Dockerfile", "-t", "dev-registry-tego057.bcms.tech/v1/${project.name}:${project.version}"
+}
+
+task buildDockerImageDB(type:Exec) {
+	workingDir "$projectDir"
+	commandLine "docker", "build", ".", "-f", "Dockerfile.db", "-t", "dev-registry-tego057.bcms.tech/v1/${project.name}-db:${project.version}"
+}
+
+task pushDockerImage(type: Exec) {
+	commandLine "docker", "push", "dev-registry-tego057.bcms.tech/v1/${project.name}:${project.version}"
+}
+
+task pushDockerImageDB(type: Exec) {
+	commandLine "docker", "push", "dev-registry-tego057.bcms.tech/v1/${project.name}-db:${project.version}"
+}*/
+

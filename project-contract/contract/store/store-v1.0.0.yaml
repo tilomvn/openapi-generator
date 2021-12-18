@@ -1,0 +1,310 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v1.0.0
+servers:
+  - url: http://localhost:8080/
+    description: Generated server url
+paths:
+  /v1/stores/{storeId}:
+    get:
+      summary: Get a store
+      description: get a store
+      tags:
+        - store-service
+      operationId: getStore
+      parameters:
+        - in: path
+          name: storeId
+          schema:
+            type: string
+          required: true
+          description: Store Id
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          description: JWT Token
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreDetailResponse'
+        '400':
+          description: bad request
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: not found
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: internal server error
+          $ref: '#/components/responses/ServerError'
+  /v1/stores/user:
+    post:
+      summary: Register a new user
+      description: register a new user
+      tags:
+        - store-service
+      operationId: registerUser
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          description: JWT Token
+        - in: header
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: userId
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                logo:
+                  type: string
+                  format: binary
+                user:
+                  $ref: '#/components/schemas/UserDTO'
+            encoding:
+              logo:
+                contentType: image/png, image/jpeg
+              user:
+                contentType: application/json
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistrationResponse'
+        '400':
+          description: bad request
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: not found
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: internal server error
+          $ref: '#/components/responses/ServerError'
+        '403':
+          description: Include Model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+components:
+  schemas:
+    CashierDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+        role:
+          type: string
+          enum:
+            - CASHIER
+            - STORE_MANAGER
+    BusinessHourDTO:
+      type: object
+      properties:
+        startTime:
+          type: string
+          maximum: 10
+        endTime:
+          type: string
+          maximum: 10
+        dayOnWeek:
+          type: string
+          enum:
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+            - SUNDAY
+    CityDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        districts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictDTO'
+    DistrictDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        communes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommuneDTO'
+    CommuneDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    CategoryDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          $ref: '#/components/schemas/LanguageDTO'
+    LanguageDTO:
+      type: object
+      properties:
+        km:
+          type: string
+        en:
+          type: string
+    StoreDTO:
+      type: object
+      required:
+        - name
+        - city
+        - district
+        - commune
+        - address
+        - businessHours
+        - categories
+        - merchantId
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          maximum: 250
+        city:
+          $ref: '#/components/schemas/CityDTO'
+        district:
+          $ref: '#/components/schemas/DistrictDTO'
+        commune:
+          $ref: '#/components/schemas/CommuneDTO'
+        address:
+          type: string
+          maximum: 300
+        businessHours:
+          type: array
+          items:
+            $ref: '#/components/schemas/BusinessHourDTO'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDTO'
+        description:
+          type: string
+          maximum: 500
+        merchantId:
+          type: string
+        gps:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVATED
+            - DEACTIVATED
+            - BLOCKED
+        cashiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashierDTO'
+        code:
+          type: string
+        logo:
+          type: string
+          format: byte
+    UserRegistrationResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          $ref: '#/components/schemas/UserDTO'
+    StoreDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            storeInfo:
+              $ref: '#/components/schemas/StoreDTO'
+    UserDTO:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+  responses:
+    Unauthorized:
+      description: Unauthorized error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Not Found Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Bad Request Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

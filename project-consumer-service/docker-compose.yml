@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  database:
+    image: bitnami/mysql:8.0.27
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: 123456x@X
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: store-service
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - "mysqlData:/bitnami/mysql/data"
+  flyway:
+    image: flyway/flyway
+    command: -url=jdbc:mysql://database:3306 -schemas=store-service -user=mysql -password=password migrate
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    depends_on:
+      - database
+    restart: on-failure:3
+volumes:
+  mysqlData:
